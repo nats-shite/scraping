@@ -22,6 +22,7 @@ while True:
       if newHeight == lastHeight:
           break
       lastHeight = newHeight
+      
 status = driver.find_elements_by_css_selector('.mn-connection-card__name.t-16.t-black.t-bold')
 status = driver.find_elements_by_css_selector('.mn-connection-card__details')
 src = driver.find_elements_by_css_selector(".list-style-none img")
