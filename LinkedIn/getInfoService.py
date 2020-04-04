@@ -5,6 +5,7 @@ from selenium.webdriver.common.keys import Keys
 import csv
 import pandas as pd
 import os
+from collections import defaultdict
 
 options = webdriver.chrome.options.Options()
 profile_path = r'C:\Users\shite\AppData\Local\Google\Chrome\User Data'
@@ -20,77 +21,81 @@ driver.get('https://www.linkedin.com/mynetwork/invite-connect/connections/')
 time.sleep(5)
 pause = 5
 driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+lastHeight = driver.execute_script("return document.body.scrollHeight")
+while True:
+      driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")   
+      time.sleep(2)
+      newHeight = driver.execute_script("return document.body.scrollHeight")
+      if newHeight == lastHeight:
+          break
+      lastHeight = newHeight
 
-#lastHeight = driver.execute_script("return document.body.scrollHeight")
-#while True:
-#      driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")   
-#      time.sleep(2)
-#      newHeight = driver.execute_script("return document.body.scrollHeight")
-#      if newHeight == lastHeight:
-#          break
-#      lastHeight = newHeight
-#detail_urls = []
-
-#lastHeight = driver.execute_script("return document.body.scrollHeight")      
 elems_detail_url = [i.get_attribute('href') for i in driver.find_elements_by_css_selector(".mn-connection-card__details a") ]
-for url in elems_detail_url:
- #newHeight = driver.execute_script("return document.body.scrollHeight")
- #if newHeight == lastHeight:
- # break
- elems_detail_url.append(url)
- for url_list in elems_detail_url:
+for url_list in elems_detail_url:
               driver.get(url_list)
-              time.sleep(3)
-              name = driver.find_elements_by_css_selector('.inline.t-24.t-black.t-normal.break-words')
-              corp = driver.find_elements_by_css_selector('.pv-entity__logo.company-logo img')
-              service_years = driver.find_elements_by_css_selector('.display-flex h4')              
-              occupation = driver.find_elements_by_css_selector('.pv-profile-section__card-item-v2.pv-profile-section.pv-position-entity.ember-view h3')
-              school = driver.find_elements_by_css_selector('.pv-entity__school-name.t-16.t-black.t-bold')
-              enrollment_period = driver.find_elements_by_css_selector('.pv-entity__degree-info time')
-              detail_school = driver.find_elements_by_css_selector('.pv-entity__comma-item')
-              name.append("")
-              corp.append("")
-              service_years.append("")
-              occupation.append("")
-              school.append("")
-              enrollment_period.append("")
-              detail_school.append("")
-              for na, cor, sev_year, occu, shc, en_period, dtl_sch,   in zip(name, corp,service_years, occupation, school, enrollment_period, detail_school):
-                 print("" if na == "" else na.text)
-                 print("" if cor == "" else cor.get_attribute("alt"))
-                 print("" if sev_year == "" else sev_year.text)
-                 print("" if occu == "" else occu.text)
-                 print("" if shc == "" else shc.text)
-                 print("" if en_period == "" else en_period.text)
-                 print("" if dtl_sch == "" else dtl_sch.text)
-                 #print(ski.text)-
-                 name = "" if na == "" else na.text
-                 corp = "" if cor == "" else cor.get_attribute("alt")
-                 service_years = "" if sev_year == "" else sev_year.text
-                 occupation = "" if occu == "" else occu.text
-                 school = "" if shc == "" else shc.text
-                 enrollment_period = "" if en_period == "" else en_period.text
-                 detail_school = "" if dtl_sch == "" else dtl_sch.text
+              time.sleep(3)      
+              names = driver.find_elements_by_css_selector('.inline.t-24.t-black.t-normal.break-words')
+              names.append("")
+              for name in names:
+                print("" if name == "" else "名前：" + name.text)
+                name = "" if name == "" else name.text
+                with open('dtl_text', mode='a', encoding = 'utf-8') as fw:
+                  fw.write('\n' + "名前：" + name + '\n')
+
+              corps = driver.find_elements_by_css_selector('.pv-entity__summary-info.pv-entity__summary-info--background-section>p.pv-entity__secondary-title.t-14.t-black.t-normal')
+              corps.append("")
+              positions = driver.find_elements_by_css_selector('.pv-entity__summary-info.pv-entity__summary-info--background-section>h3')
+              positions.append("")
+              periods = driver.find_elements_by_css_selector('.pv-entity__summary-info.pv-entity__summary-info--background-section>div>h4.pv-entity__date-range.t-14.t-black--light.t-normal>span:nth-child(2)')
+              periods.append("")
+              for corp, position, period in zip(corps, positions, periods):
+                 print("" if corp == "" else "会社名：" + corp.text)
+                 print("" if position == "" else "ポジション名：" + position.text)
+                 print("" if period == "" else "在籍期間：" + period.text)
+                 corp = "" if corp == "" else corp.text
+                 position = "" if position == "" else position.text
+                 period = "" if period == "" else period.text
                  with open('dtl_text', mode='a', encoding = 'utf-8') as fw:
-                   fw.write(name + '\n' + "【職歴】" + '\n' + corp + '\n' + service_years + '\n' + occupation + '\n' + "【学歴】" + '\n' + school + '\n' + enrollment_period + '\n' + detail_school + '\n')
-                   #driver.back()
-                   #cur_url = driver.current_url
-                   #if cur_url == "https://www.linkedin.com/mynetwork/invite-connect/connections/":
-                   #  break
+                  fw.write("会社名：" + corp + '\n' + "ポジション名：" + position + '\n' + "在籍期間：" + period + '\n')
 
-#status = driver.find_elements_by_css_selector('.mn-connection-card__name.t-16.t-black.t-bold')
-#status = driver.find_elements_by_css_selector('.mn-connection-card__details')
-#src = driver.find_elements_by_css_selector(".list-style-none img")
-#href = driver.find_elements_by_css_selector(".mn-connection-card__details a")
-#for summary, image, link in zip(status, src, href):
-#  print(summary.text)
-#  print("\t" + image.get_attribute("src"))
-#  print("\t" + link.get_attribute("href"))
-#  status = summary.text
-#  src = "profilePicture:" + "\t" + image.get_attribute("src")
-#  href = "profileLink：" + "\t" + link.get_attribute("href")
-#  with open('text', mode='a', encoding = 'utf-8') as fw:
-#        fw.write(status + '\n' + src + '\n' + href + '\n')
-#        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-
+              corps2 = driver.find_elements_by_css_selector('.pv-entity__company-summary-info>h3>span:nth-child(2)')
+              corps2.append("")
+              positions2 = driver.find_elements_by_css_selector('.pv-entity__summary-info-v2.pv-entity__summary-info--background-section.pv-entity__summary-info-margin-top>h3>span:nth-child(2)')
+              positions2.append("")
+              periods2 = driver.find_elements_by_css_selector('h4.pv-entity__date-range.t-14.t-black--light.t-normal>span:nth-child(2)')
+              periods2.append("")
+              #occu_sections = driver.find_elements_by_css_selector('pv-entity__position-group-pager.pv-profile-section__list-item.ember-view')
+              #for occu_section in occu_sections:
+              for corp2, position2, period2 in zip(corps2, positions2, periods2):
+                 oc = defaultdict(list)
+                 for corp2, position2 in zip(corps2, positions2):
+                  corp_text = "" if corp2 == "" else corp2.text
+                  position_text = "" if position2 == "" else position2.text
+                  oc[corp_text].append(position_text)
+                  print(oc)
+                  print("" if corp2 == "" else "会社名：" + corp2.text)
+                  print("" if position2 == "" else "ポジション名：" + position2.text)
+                  print("" if period2 == "" and positions2  == "" else "在籍期間：" + period2.text)
+                  corp2 = "" if corp2 == "" else corp2.text
+                  position2 = "" if position2 == "" else position2.text
+                  period2 = "" if period2 == "" and positions2  == "" else period2.text
+                  with open('dtl_text', mode='a', encoding = 'utf-8') as fw:
+                   fw.write("会社名2：" + corp2 + '\n' + "ポジション名2：" + position2 + '\n' + "在籍期間2：" + period2 + '\n')
+              
+              schools = driver.find_elements_by_css_selector('.pv-entity__summary-info.pv-entity__summary-info--background-section>div>h3')
+              schools.append("")
+              admissions = driver.find_elements_by_css_selector('.pv-entity__summary-info.pv-entity__summary-info--background-section>p>span:nth-child(2)>time:nth-child(1)')
+              admissions.append("")
+              graduations = driver.find_elements_by_css_selector('.pv-entity__summary-info.pv-entity__summary-info--background-section>p>span:nth-child(2)>time:nth-child(2)')
+              graduations.append("")
+              for school, admission, graduation in zip(schools, admissions, graduations):
+                print("" if school == "" else "学校名：" + school.text)
+                print("" if admission == "" else "入学時期：" + admission.text)
+                print("" if graduation == "" else "卒業時期：" + graduation.text)
+                school = "" if school == "" else school.text
+                admission = "" if admission == "" else admission.text
+                graduation = "" if graduation == "" else graduation.text
+                with open('dtl_text', mode='a', encoding = 'utf-8') as fw:
+                  fw.write("学校名：" + school + '\n' + "入学時期：" + admission + '\n' + "卒業時期：" + graduation + '\n')
+              
 driver.quit()
