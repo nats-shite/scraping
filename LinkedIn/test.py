@@ -17,18 +17,7 @@ driver = webdriver.Chrome(executable_path=r"C:\Develop\nats\scraping\chromedrive
 #driver.find_element_by_name("session_password").send_keys("natsworld55")
 #driver.find_element_by_class_name("login__form_action_container").click()
 #time.sleep(30)
-driver.get('https://www.linkedin.com/mynetwork/invite-connect/connections/')
-time.sleep(5)
-pause = 5
-driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-lastHeight = driver.execute_script("return document.body.scrollHeight")
-while True:
-      driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")   
-      time.sleep(2)
-      newHeight = driver.execute_script("return document.body.scrollHeight")
-      if newHeight == lastHeight:
-          break
-      lastHeight = newHeight
+
 
 driver.get("https://www.linkedin.com/in/ayumi-hosaka-354864141/")
 time.sleep(3)      
@@ -72,11 +61,10 @@ for name in names:
                      print("" if corp2 == "" else "会社名：" + corp2)
                      with open('dtl_text', mode='a', encoding = 'utf-8') as fw:
                        fw.write("会社名2：" + corp2 + '\n')
+                       fw.close()
                        positions2 = occupation.find_elements_by_css_selector('.pv-entity__summary-info-v2.pv-entity__summary-info--background-section.pv-entity__summary-info-margin-top>h3>span:nth-child(2)')
-                      #positions2 = driver.find_elements_by_css_selector('.pv-entity__summary-info-v2.pv-entity__summary-info--background-section.pv-entity__summary-info-margin-top>h3>span:nth-child(2)')
                        positions2.append("")
-                       periods2 = occupation.find_elements_by_css_selector('.pv-entity__summary-info-v2.pv-entity__summary-info--background-section.pv-entity__summary-info-margin-top>h3>span:nth-child(2)')
-                 #periods2 = driver.find_elements_by_css_selector('h4.pv-entity__date-range.t-14.t-black--light.t-normal>span:nth-child(2)')
+                       periods2 = occupation.find_elements_by_css_selector('h4.pv-entity__date-range.t-14.t-black--light.t-normal>span:nth-child(2)')
                        periods2.append("")
                        for position2, period2 in zip(positions2, periods2):
                           if position2 == "" or period2 == "":
@@ -95,6 +83,8 @@ for name in names:
                 graduations = driver.find_elements_by_css_selector('.pv-entity__summary-info.pv-entity__summary-info--background-section>p>span:nth-child(2)>time:nth-child(2)')
                 graduations.append("")
                 for school, admission, graduation in zip(schools, admissions, graduations):
+                     if school == "":
+                      break 
                      print("" if school == "" else "学校名：" + school.text)
                      print("" if admission == "" else "入学時期：" + admission.text)
                      print("" if graduation == "" else "卒業時期：" + graduation.text)

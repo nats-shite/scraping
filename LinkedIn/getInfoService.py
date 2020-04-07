@@ -42,7 +42,7 @@ for url_list in elems_detail_url:
                 print("" if name == "" else "名前：" + name.text)
                 name = "" if name == "" else name.text
                 with open('dtl_text', mode='a', encoding = 'utf-8') as fw:
-                  fw.write('\n' + "名前：" + name + '\n')
+                  fw.write("名前：" + name)
 
               corps = driver.find_elements_by_css_selector('.pv-entity__summary-info.pv-entity__summary-info--background-section>p.pv-entity__secondary-title.t-14.t-black.t-normal')
               corps.append("")
@@ -60,20 +60,21 @@ for url_list in elems_detail_url:
                    position = "" if position == "" else position.text
                    period = "" if period == "" else period.text
                    with open('dtl_text', mode='a', encoding = 'utf-8') as fw:
-                    fw.write("会社名：" + corp + '\n' + "ポジション名：" + position + '\n' + "在籍期間：" + period + '\n')
+                    fw.write('	' + "会社名：" + corp + '	' + "ポジション名：" + position + '	' + "在籍期間：" + period + '\n')
 
               corps2 = driver.find_elements_by_css_selector('.pv-entity__company-summary-info>h3>span:nth-child(2)')
               corps2.append("")
               occupations = driver.find_elements_by_css_selector('.pv-entity__position-group-pager.pv-profile-section__list-item.ember-view section')
               occupations.append("")
               for corp2, occupation in zip(corps2, occupations):
-                     if occupation == "":
+                     if occupation == "" or corp2 == "":
                          break
                      occu_sections = driver.find_elements_by_css_selector('.pv-entity__position-group-pager.pv-profile-section__list-item.ember-view section')[0].get_attribute("id")
                      corp2 = "" if corp2 == "" else corp2.text
                      print("" if corp2 == "" else "会社名：" + corp2)
                      with open('dtl_text', mode='a', encoding = 'utf-8') as fw:
-                       fw.write("会社名2：" + corp2 + '\n')
+                       fw.write('	' + "会社名：" + corp2)
+                       fw.close()
                        positions2 = occupation.find_elements_by_css_selector('.pv-entity__summary-info-v2.pv-entity__summary-info--background-section.pv-entity__summary-info-margin-top>h3>span:nth-child(2)')
                        positions2.append("")
                        periods2 = occupation.find_elements_by_css_selector('h4.pv-entity__date-range.t-14.t-black--light.t-normal>span:nth-child(2)')
@@ -86,7 +87,8 @@ for url_list in elems_detail_url:
                           print("" if position2 == "" else "ポジション名：" + position2)
                           print("" if period2 == "" or positions2  == "" else "在籍期間：" + period2)
                           with open('dtl_text', mode='a', encoding = 'utf-8') as fw:
-                              fw.write("ポジション名2：" + position2 + '\n' + "在籍期間2：" + period2 + '\n')
+                              fw.write('	' + "ポジション名：" + position2 + '	' + "在籍期間：" + period2 + '\n')
+                              
               
               schools = driver.find_elements_by_css_selector('.pv-entity__summary-info.pv-entity__summary-info--background-section>div>h3')
               schools.append("")
@@ -104,6 +106,6 @@ for url_list in elems_detail_url:
                 admission = "" if admission == "" else admission.text
                 graduation = "" if graduation == "" else graduation.text
                 with open('dtl_text', mode='a', encoding = 'utf-8') as fw:
-                  fw.write("学校名：" + school + '\n' + "入学時期：" + admission + '\n' + "卒業時期：" + graduation + '\n')
+                  fw.write('	' + "学校名：" + school + '	' + "入学時期：" + admission + '	' + "卒業時期：" + graduation + '\n')
               
 driver.quit()
